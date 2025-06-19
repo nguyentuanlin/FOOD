@@ -34,7 +34,7 @@ public class FoodItemServiceImpl implements FoodItemService {
     }
     
     @Override
-    public List<FoodItemDTO> getFoodItemsByCategory(Long categoryId) {
+    public List<FoodItemDTO> getFoodItemsByCategory(String categoryId) {
         if (!categoryRepository.existsById(categoryId)) {
             throw new ResourceNotFoundException("Category not found with id: " + categoryId);
         }
@@ -52,7 +52,7 @@ public class FoodItemServiceImpl implements FoodItemService {
     }
     
     @Override
-    public FoodItemDTO getFoodItemById(Long id) {
+    public FoodItemDTO getFoodItemById(String id) {
         FoodItem foodItem = foodItemRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Food item not found with id: " + id));
         return convertToDTO(foodItem);
@@ -67,47 +67,84 @@ public class FoodItemServiceImpl implements FoodItemService {
         foodItem.setName(foodItemDTO.getName());
         foodItem.setDescription(foodItemDTO.getDescription());
         foodItem.setPrice(foodItemDTO.getPrice());
-        foodItem.setCategory(category);
+        foodItem.setCategoryId(category.getId());
+        foodItem.setCategoryName(category.getName());
         foodItem.setImageUrl(foodItemDTO.getImageUrl());
         foodItem.setAvailable(foodItemDTO.isAvailable());
+        foodItem.prePersist();
         
         FoodItem savedFoodItem = foodItemRepository.save(foodItem);
+        
+        // Update the category with the new food item ID
+        if (!category.getFoodItemIds().contains(savedFoodItem.getId())) {
+            category.getFoodItemIds().add(savedFoodItem.getId());
+            categoryRepository.save(category);
+        }
+        
         return convertToDTO(savedFoodItem);
     }
     
     @Override
-    public FoodItemDTO updateFoodItem(Long id, FoodItemDTO foodItemDTO) {
+    public FoodItemDTO updateFoodItem(String id, FoodItemDTO foodItemDTO) {
         FoodItem foodItem = foodItemRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Food item not found with id: " + id));
         
         Category category = categoryRepository.findById(foodItemDTO.getCategoryId())
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + foodItemDTO.getCategoryId()));
         
+        // If category is changed, update the references
+        if (!foodItem.getCategoryId().equals(category.getId())) {
+            // Remove from old category
+            Category oldCategory = categoryRepository.findById(foodItem.getCategoryId())
+                    .orElse(null);
+            if (oldCategory != null) {
+                oldCategory.getFoodItemIds().remove(foodItem.getId());
+                categoryRepository.save(oldCategory);
+            }
+            
+            // Add to new category
+            if (!category.getFoodItemIds().contains(foodItem.getId())) {
+                category.getFoodItemIds().add(foodItem.getId());
+                categoryRepository.save(category);
+            }
+        }
+        
         foodItem.setName(foodItemDTO.getName());
         foodItem.setDescription(foodItemDTO.getDescription());
         foodItem.setPrice(foodItemDTO.getPrice());
-        foodItem.setCategory(category);
+        foodItem.setCategoryId(category.getId());
+        foodItem.setCategoryName(category.getName());
         foodItem.setImageUrl(foodItemDTO.getImageUrl());
         foodItem.setAvailable(foodItemDTO.isAvailable());
+        foodItem.preUpdate();
         
         FoodItem updatedFoodItem = foodItemRepository.save(foodItem);
         return convertToDTO(updatedFoodItem);
     }
     
     @Override
-    public void deleteFoodItem(Long id) {
-        if (!foodItemRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Food item not found with id: " + id);
+    public void deleteFoodItem(String id) {
+        FoodItem foodItem = foodItemRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Food item not found with id: " + id));
+        
+        // Remove the food item ID from the category
+        Category category = categoryRepository.findById(foodItem.getCategoryId())
+                .orElse(null);
+        if (category != null) {
+            category.getFoodItemIds().remove(id);
+            categoryRepository.save(category);
         }
+        
         foodItemRepository.deleteById(id);
     }
     
     @Override
-    public void updateFoodItemAvailability(Long id, boolean available) {
+    public void updateFoodItemAvailability(String id, boolean available) {
         FoodItem foodItem = foodItemRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Food item not found with id: " + id));
         
         foodItem.setAvailable(available);
+        foodItem.preUpdate();
         foodItemRepository.save(foodItem);
     }
     
@@ -117,8 +154,8 @@ public class FoodItemServiceImpl implements FoodItemService {
         foodItemDTO.setName(foodItem.getName());
         foodItemDTO.setDescription(foodItem.getDescription());
         foodItemDTO.setPrice(foodItem.getPrice());
-        foodItemDTO.setCategoryId(foodItem.getCategory().getId());
-        foodItemDTO.setCategoryName(foodItem.getCategory().getName());
+        foodItemDTO.setCategoryId(foodItem.getCategoryId());
+        foodItemDTO.setCategoryName(foodItem.getCategoryName());
         foodItemDTO.setImageUrl(foodItem.getImageUrl());
         foodItemDTO.setAvailable(foodItem.isAvailable());
         return foodItemDTO;

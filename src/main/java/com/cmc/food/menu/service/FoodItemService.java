@@ -10,17 +10,17 @@ public interface FoodItemService {
     
     List<FoodItemDTO> getAllAvailableFoodItems();
     
-    List<FoodItemDTO> getFoodItemsByCategory(Long categoryId);
+    List<FoodItemDTO> getFoodItemsByCategory(String categoryId);
     
     List<FoodItemDTO> searchFoodItems(String keyword);
     
-    FoodItemDTO getFoodItemById(Long id);
+    FoodItemDTO getFoodItemById(String id);
     
     FoodItemDTO createFoodItem(FoodItemDTO foodItemDTO);
     
-    FoodItemDTO updateFoodItem(Long id, FoodItemDTO foodItemDTO);
+    FoodItemDTO updateFoodItem(String id, FoodItemDTO foodItemDTO);
     
-    void deleteFoodItem(Long id);
+    void deleteFoodItem(String id);
     
-    void updateFoodItemAvailability(Long id, boolean available);
+    void updateFoodItemAvailability(String id, boolean available);
 } 

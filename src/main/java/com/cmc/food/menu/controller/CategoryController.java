@@ -28,7 +28,7 @@ public class CategoryController {
     
     @GetMapping("/{id}")
     @Operation(summary = "Get category by ID", description = "Retrieves a food category by its ID")
-    public ResponseEntity<CategoryDTO> getCategoryById(@PathVariable Long id) {
+    public ResponseEntity<CategoryDTO> getCategoryById(@PathVariable String id) {
         return ResponseEntity.ok(categoryService.getCategoryById(id));
     }
     
@@ -46,13 +46,13 @@ public class CategoryController {
     
     @PutMapping("/{id}")
     @Operation(summary = "Update category", description = "Updates an existing food category")
-    public ResponseEntity<CategoryDTO> updateCategory(@PathVariable Long id, @Valid @RequestBody CategoryDTO categoryDTO) {
+    public ResponseEntity<CategoryDTO> updateCategory(@PathVariable String id, @Valid @RequestBody CategoryDTO categoryDTO) {
         return ResponseEntity.ok(categoryService.updateCategory(id, categoryDTO));
     }
     
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete category", description = "Deletes a food category by its ID")
-    public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteCategory(@PathVariable String id) {
         categoryService.deleteCategory(id);
         return ResponseEntity.noContent().build();
     }

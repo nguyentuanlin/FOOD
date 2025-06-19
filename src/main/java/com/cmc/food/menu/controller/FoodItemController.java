@@ -34,13 +34,13 @@ public class FoodItemController {
     
     @GetMapping("/{id}")
     @Operation(summary = "Get food item by ID", description = "Retrieves a food item by its ID")
-    public ResponseEntity<FoodItemDTO> getFoodItemById(@PathVariable Long id) {
+    public ResponseEntity<FoodItemDTO> getFoodItemById(@PathVariable String id) {
         return ResponseEntity.ok(foodItemService.getFoodItemById(id));
     }
     
     @GetMapping("/category/{categoryId}")
     @Operation(summary = "Get food items by category", description = "Retrieves food items by category ID")
-    public ResponseEntity<List<FoodItemDTO>> getFoodItemsByCategory(@PathVariable Long categoryId) {
+    public ResponseEntity<List<FoodItemDTO>> getFoodItemsByCategory(@PathVariable String categoryId) {
         return ResponseEntity.ok(foodItemService.getFoodItemsByCategory(categoryId));
     }
     
@@ -58,20 +58,20 @@ public class FoodItemController {
     
     @PutMapping("/{id}")
     @Operation(summary = "Update food item", description = "Updates an existing food item")
-    public ResponseEntity<FoodItemDTO> updateFoodItem(@PathVariable Long id, @Valid @RequestBody FoodItemDTO foodItemDTO) {
+    public ResponseEntity<FoodItemDTO> updateFoodItem(@PathVariable String id, @Valid @RequestBody FoodItemDTO foodItemDTO) {
         return ResponseEntity.ok(foodItemService.updateFoodItem(id, foodItemDTO));
     }
     
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete food item", description = "Deletes a food item by its ID")
-    public ResponseEntity<Void> deleteFoodItem(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteFoodItem(@PathVariable String id) {
         foodItemService.deleteFoodItem(id);
         return ResponseEntity.noContent().build();
     }
     
     @PatchMapping("/{id}/availability")
     @Operation(summary = "Update food item availability", description = "Updates the availability of a food item")
-    public ResponseEntity<Void> updateFoodItemAvailability(@PathVariable Long id, @RequestParam boolean available) {
+    public ResponseEntity<Void> updateFoodItemAvailability(@PathVariable String id, @RequestParam boolean available) {
         foodItemService.updateFoodItemAvailability(id, available);
         return ResponseEntity.noContent().build();
     }

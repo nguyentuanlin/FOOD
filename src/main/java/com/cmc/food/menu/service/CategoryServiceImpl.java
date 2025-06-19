@@ -24,7 +24,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
     
     @Override
-    public CategoryDTO getCategoryById(Long id) {
+    public CategoryDTO getCategoryById(String id) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + id));
         return convertToDTO(category);
@@ -46,13 +46,15 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = new Category();
         category.setName(categoryDTO.getName());
         category.setDescription(categoryDTO.getDescription());
+        category.setFoodItemIds(categoryDTO.getFoodItemIds());
+        category.prePersist();
         
         Category savedCategory = categoryRepository.save(category);
         return convertToDTO(savedCategory);
     }
     
     @Override
-    public CategoryDTO updateCategory(Long id, CategoryDTO categoryDTO) {
+    public CategoryDTO updateCategory(String id, CategoryDTO categoryDTO) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + id));
         
@@ -64,13 +66,15 @@ public class CategoryServiceImpl implements CategoryService {
         
         category.setName(categoryDTO.getName());
         category.setDescription(categoryDTO.getDescription());
+        category.setFoodItemIds(categoryDTO.getFoodItemIds());
+        category.preUpdate();
         
         Category updatedCategory = categoryRepository.save(category);
         return convertToDTO(updatedCategory);
     }
     
     @Override
-    public void deleteCategory(Long id) {
+    public void deleteCategory(String id) {
         if (!categoryRepository.existsById(id)) {
             throw new ResourceNotFoundException("Category not found with id: " + id);
         }
@@ -87,6 +91,7 @@ public class CategoryServiceImpl implements CategoryService {
         categoryDTO.setId(category.getId());
         categoryDTO.setName(category.getName());
         categoryDTO.setDescription(category.getDescription());
+        categoryDTO.setFoodItemIds(category.getFoodItemIds());
         return categoryDTO;
     }
 } 

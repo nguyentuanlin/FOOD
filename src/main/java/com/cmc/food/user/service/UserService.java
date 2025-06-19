@@ -9,15 +9,15 @@ public interface UserService {
     
     List<UserDTO> getAllUsers();
     
-    UserDTO getUserById(Long id);
+    UserDTO getUserById(String id);
     
     UserDTO getUserByUsername(String username);
     
     UserDTO createUser(CreateUserRequest createUserRequest);
     
-    UserDTO updateUser(Long id, UserDTO userDTO);
+    UserDTO updateUser(String id, UserDTO userDTO);
     
-    void deleteUser(Long id);
+    void deleteUser(String id);
     
     boolean existsByUsername(String username);
     

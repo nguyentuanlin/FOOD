@@ -1,10 +1,12 @@
 package com.cmc.food.menu.model;
 
-import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -13,37 +15,30 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "categories")
+@Document(collection = "categories")
 public class Category {
     
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
     
     @NotBlank(message = "Name is required")
-    @Column(unique = true)
+    @Indexed(unique = true)
     private String name;
     
     private String description;
     
-    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<FoodItem> foodItems = new ArrayList<>();
+    private List<String> foodItemIds = new ArrayList<>();
     
-    @Column(name = "created_at")
     private LocalDateTime createdAt;
     
-    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
     
-    @PrePersist
-    protected void onCreate() {
+    public void prePersist() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
     
-    @PreUpdate
-    protected void onUpdate() {
+    public void preUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
 } 

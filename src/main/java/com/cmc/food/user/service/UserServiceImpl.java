@@ -25,7 +25,7 @@ public class UserServiceImpl implements UserService {
     }
     
     @Override
-    public UserDTO getUserById(Long id) {
+    public UserDTO getUserById(String id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
         return convertToDTO(user);
@@ -53,13 +53,14 @@ public class UserServiceImpl implements UserService {
         user.setEmail(createUserRequest.getEmail());
         user.setPassword(createUserRequest.getPassword()); // In a real app, password should be encrypted
         user.setFullName(createUserRequest.getFullName());
+        user.prePersist();
         
         User savedUser = userRepository.save(user);
         return convertToDTO(savedUser);
     }
     
     @Override
-    public UserDTO updateUser(Long id, UserDTO userDTO) {
+    public UserDTO updateUser(String id, UserDTO userDTO) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
         
@@ -78,13 +79,14 @@ public class UserServiceImpl implements UserService {
         user.setUsername(userDTO.getUsername());
         user.setEmail(userDTO.getEmail());
         user.setFullName(userDTO.getFullName());
+        user.preUpdate();
         
         User updatedUser = userRepository.save(user);
         return convertToDTO(updatedUser);
     }
     
     @Override
-    public void deleteUser(Long id) {
+    public void deleteUser(String id) {
         if (!userRepository.existsById(id)) {
             throw new ResourceNotFoundException("User not found with id: " + id);
         }

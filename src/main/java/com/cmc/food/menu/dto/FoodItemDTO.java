@@ -14,7 +14,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class FoodItemDTO {
     
-    private Long id;
+    private String id;
     
     @NotBlank(message = "Name is required")
     private String name;
@@ -25,7 +25,7 @@ public class FoodItemDTO {
     @Positive(message = "Price must be positive")
     private BigDecimal price;
     
-    private Long categoryId;
+    private String categoryId;
     
     private String categoryName;
     
